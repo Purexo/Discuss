@@ -1,0 +1,411 @@
+<!-- start template-->
+<html>
+	<head>
+	<title>{$titre}</title>
+		<script src='../js/jquery-1.10.2.min.js'></script>
+		<script src='../js/jquery-ui-1.10.3.custom.min.js'></script>	
+		<script src='../styles/bootstrap/js/bootstrap.min.js'></script>	
+		<script src='../js/default.js'></script>	
+		<link rel='stylesheet' href='../styles/ui-lightness/jquery-ui-1.10.3.custom.min.css' />
+		<link rel='stylesheet' href='../styles/bootstrap/css/bootstrap.min.css' />	
+		<link rel='stylesheet' href='../styles/defaut.css' />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf8">
+	</head>
+	<body>
+	<div class='doc'>
+
+		<div id='entete'>
+		<a href='?module=index'>Mini-FWK</a>
+		</div>
+	
+		<div id='menu'>
+			<a href='../' title='contenu'>Accueil</a>
+		</div>
+	
+
+		
+		<div class='container'>
+
+			<div id='module'>
+				<h1>Doc</h1>
+
+
+
+
+
+<ol>
+<li><a href="#fct">Fonctionnement</a></li>
+<li><a href="#mdl">Développer un Module</a></li>
+<li><a href="#cls">Classes outils</a></li>
+<li><a href="#tpl">Template</a></li>
+</ol>
+<h3 id='fct'>Fonctionnement</h3>
+<p>
+Mini-FWK est un mini framework à usage pédagogique, ayant pour objectif 
+d'introduire les concepts de programmation MVC
+</p>
+<p>
+Il est constitué de quelques classes : 
+</p>
+<ul>
+
+	<li><b>DB</b> : wrapper PDO</li>
+	<li><b>Form</b> : formulaire HTML en objet, facilite l'écriture, la génération, le pré-remplissage et la validation de formulaires</li>
+	<li><b>FrontController</b> : chargeur de modules</li>
+	<li><b>Module</b> : classe de base des modules à implémenter par les étudiants. Un <a href="#mdl">module</a> représente un "sous-programme" du site</li>
+	<li><b>Request</b> : wrapper des tableaux <code>$_GET</code>, <code>$_POST</code> et <code>$_REQUEST</code></li>
+	<li><b>Session</b> : wrapper du tableau <code>$_SESSION</code> de php</li>
+	<li><b>Site</b> : boîte à outils</li>
+</ul>
+
+<p>Toutes les requêtes sur le site aboutissent vers le fichier <code>index.php</code>, <b>bootstrap</b> du framework. Le bootstrap s'occupe d'initialiser :
+</p>
+<ul>
+<li>La session</li>
+<li>La connexion à la base de données</li>
+<li>Le moteur de template (SMARTY)</li>
+<li>La redirection d'affichage</li>
+<li>Le FrontController</li>
+</ul>
+<p>
+Par défaut, le Module <b>index</b> est chargé si rien n'est précisé dans l'URL.
+</p>
+
+
+
+
+<h3 id='mdl'>Développer un Module</h3>
+<p>
+	Un <b>module</b> est un ensemble d'actions groupées au sein d'une même <b>classe</b><br />
+	Par exemple, une <b>insciption</b> est composée des étapes suivantes : 
+</p>
+<ul>
+	<li>Affichage d'un formulaire d'inscription</li>
+	<li>Vérification des données du formulaire</li>
+	<li>Enregistrement des données et redirection ou réaffichage du formulaire si erreurs</li>
+</ul>
+<p>
+	Un module d'inscription sera donc implémenté sous la forme d'un Module, soit une classe contenant au moins les 3 méthodes suivantes :
+</p>
+<ul>
+	<li><code>action_index()</code> : action par défaut, affichage du formulaire</li>
+	<li><code>action_valider()</code> : vérification des données saisies par l'utilisateur, enregistrement dans la BD</li>
+	<li>éventuellement <code>action_confirmer()</code> : page de confirmation</li>
+</ul>
+
+<p>
+L'appel vers le module se fera en passant son nom en paramètre, suivi éventuellement d'une action (par défaut : index)
+</p>
+<code>http://localhost/mini-fwk/index.php?module=Inscription&action=valider</code>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+&lt;php
+class Inscription extends Module{
+	function action_index(){
+		//affichage d'un formulaire
+	}
+	function action_valider(){
+		//vérifications et enregistrement
+	}
+	function action_confirmer(){
+		//page finale
+	}
+}
+?>
+</pre>
+</div>
+<h4>Remarques</h4>
+<p>
+<ul>
+	<li>Chaque action est indépendante l'une de l'autre, au moment de leur exécution</li>
+	<li>Une requête HTTP correspond à un appel d'une fonction</li>
+	<li>Pour passer d'une action à une autre, c'est-à-dire d'une page à une autre, il faut utliser une nouvelle requête (lien, redirection)</li>
+</ul>
+</p>
+<h4>Conventions de nommage</h4>
+Un module Inscription = 
+<ul>
+	<li>Un dossier Inscription dans le dossier modules</li>
+	<li>Une classe <b>Inscription.module.php</b>
+</ul>
+<h4>Variables disponibles dans les modules</h4>
+<ul>
+	<li><code>$this->site</code> : objet outil Site</li>
+	<li><code>$this->session</code> : objet outil Session</li>	
+	<li><code>$this->requete</code> : objet outil Request</li>
+	<li><code>$this->tpl</code> : moteur de template</li>	
+</ul>
+
+<h3 id='cls'>Classes outils</h3>
+<h4>DB : wrapper PDO</h4>
+<p>
+Objet initialisé par le Bootstrap, avec les paramètres définis dans le fichier <code>conf/Params.ini.php</code>.
+Disponible dans l'ensemble du code via <code>DB::get_instance()</code>
+</p>
+
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+	<pre>
+	$statement = DB::get_instance()->prepare("SELECT * FROM table WHERE id=?");
+	$statement->execute(array(5));
+	$ligne = $statement -> fetch();
+	</pre>
+</div>
+
+<h4>Form</h4>
+La classe Form implémente en POO un formulaire et ses champs, tout en masquant le code HTML. Le code HTML généré est modifiable dans les templates du dossier <a href="../templates/champs">/templates/champs</a>
+<h5>Constructeur</h5>
+<ul>
+<li><code>__construct( $url_action, $id_form )</code> : construit un formulaire dont l'action est <code>$url_action</code>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+	<pre>
+	$f = new Form("?module=MonModule&action=traiter","idForm1");
+	</pre>
+</div>
+</li>
+</ul>
+
+<h5>Champs</h5>
+Les champs HTML4 sont supportés, les 5 viendront dans une future version.
+<p>Chacune des méthodes <code>add*</code> ajoute un élément et renvoie un objet <code>HTMLInput</code><br />
+Les objets HTMLInput peuvent définir </p>
+<ul>
+<li>une valeur par défaut : méthode <code>set_value()</code>,</li>
+<li>visuellement le fait d'être requis : méthode <code>set_required(true)</code></li>
+<li>un état d'erreur : méthode <code>set_error()</code></li>
+<li>un message d'erreur associé: méthode <code>set_error_message($message)</code></li>
+<li>un ou plusieurs formats de validation à vérifier : <code>set_validation($regle)</code>, voir <a href='#checkform'>Vérification des formulaires</a></li>
+</ul>
+<h5>Méthodes</h5>
+<ul>
+<li><code>add_select($name,$id,$label,$options)</code> : ajoute un champ SELECT dont les options sont passées via le tableau associatif <code>$options</code>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+	//ajoute une liste déroulante et sélectionne la seconde valeur
+	$f->add_select("liste","sel1","Choisissez",array("1"=>"Un","2"=>"Deux","3"=>"Trois"))
+	  ->set_value("Deux");
+</pre>
+</div>
+</li>
+<li><code>add_text($name,$id,$label)</code> : ajoute un champ de type TEXT</li>
+<li><code>add_hidden($name,$id)</code> : ajoute un champ de type HIDDEN</li>
+<li><code>add_textarea($name,$id,$label)</code> : ajoute un champ de type TEXTAREA</li>
+<li><code>add_password($name,$id,$label)</code> : ajoute un champ de type PASSWORD</li>
+<li><code>add_submit($name,$id,$label)</code> : ajoute un bouton SUBMIT</li>
+<li><code>add_checkbox($name,$id,$label,$checked=FALSE)</code> : ajoute une case à cocher</li>
+<li><code>add_radiogroup($name,$id,$label,$radios)</code> : ajoute un groupe de boutons radio
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+	//ajoute trois boutons radio et sélectionne le premier
+	$f->add_radiogroup("choix","r1","Choix",array("id1"=>"A","id2"=>"B","id3"=>"C"))->set_value("A");
+	</pre>
+</div>
+</li>
+<li><code>__get()</code> : récupère un champ selon son attribut <code>name</code>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+	$f->add_radiogroup("choix","r1","Choix",array("id1"=>"A","id2"=>"B","id3"=>"C"));
+	$->choix->set_value("A");
+	</pre>
+</div>
+</li>
+<li><code>populate($array)</code> : remplit les champs du formulaire avec les paramètres passés dans la requête HTTP ou bien dans le tableau associatif passé en paramètre. Les clés du tableau associatif correspondent aux attributs <code>name</code> des champs</li>
+<li><code>reset_errors()</code> : efface les messages d'erreurs associés aux champs de formulaire</li>
+<li><code>build_from_array()</code> : construit un formulaire à partir d'un ensemble de tableaux associatifs. Chaque champ est défini par un ensemble de propriétés. 
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+	$f->build_from_array( array(
+			array(
+				"type"=>"text",
+				"name"=>"adresse",
+				"id"=>"adresse",
+				"required"=>true,
+				"label"=>"Adresse 1"			
+			),
+			//...
+			array(
+				"type"=>"password",
+				"name"=>"pass",
+				"id"=>"pass",
+				"required"=>true,
+				"label"=>"Mot de passe",
+				"validation"=>"required|min-length:8"
+			)
+			//...
+
+		)
+	);
+	</pre>
+</div>
+</li>
+</ul>
+<h5 id='checkform'>Vérification des formulaires</h5>
+La méthode <code>set_validation()</code> de chaque champ permet de préciser une ou des règles de validation génériques, parmi lesquelles :
+<ul>	
+<li><code>equals:valeur</code> test l'égalité avec une valeur</li>
+<li><code>equals-field:nomchamp</code> : test l'égalité avec un autre champ</li>
+<li><code>min:nombre</code> : teste si la valeur est supérieure à un nombre</li>
+<li><code>max:nombre</code> : teste si la valeur est inférieure à un nombre</li>
+<li><code>min-length:nombre</code> : teste si la valeur a une longueur supérieure à un nombre</li>
+<li><code>max-length:nombre</code>: teste si la valeur a une longueur inférieure à un nombre</li>
+<li><code>int</code> : teste si la valeur est un entier</li>
+<li><code>mail</code> : teste si la valeur est une adresse mail valide</li>
+<li><code>date:format</code> : teste si la valeur est une date valide, selon le format précisé (cf <a href="http://php.net/manual/fr/datetime.createfromformat.php">http://php.net/manual/fr/datetime.createfromformat.php</a>) </li>
+<li><code>regex:pattern</code> : teste si la valeur respecte une expression régulière</li>
+<li><code>required</code> : teste si le champ est rempli</li>	
+</ul>
+Les règles peuvent se combiner avec l'opérateur <code>|</code>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemples</div>
+<pre>
+	$f->add_text("identifiant","login","Identifiant")
+	  ->set_required()
+	  ->set_validation("min-length:8|required");
+</pre>
+ou dans la forme tableau : 
+<pre>
+	//...
+	array(
+		"type"=>"text",
+		"name"=>"identifiant",
+		"id"=>"login",
+		"required"=>true,
+		"label"=>"Identifiant",
+		"validation"=>"required|min-length:8"
+	)
+	//...
+</pre>
+</div>
+<div class="alert alert-warning" role="alert">
+	La méthode <code>set_required()</code> indique visuellement qu'un champ est obligatoire, mais n'a pas d'influence sur la règle de validation <code>("required")</code>.
+</div>
+
+
+La méthode <code>check()</code> de la classe Form teste chaque champ pour vérifier si la valeur saisie correspond à la ou aux règles définies. Lorsqu'un champ ne respecte pas une des règles, une classe CSS <code>has-error</code> est ajoutée, et un message d'erreur apparaît. 
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+
+function action_valider(){
+
+	$f = $this->session->formulaireTest;
+	$valide = $f->check(); //true ou false
+	
+	//suite du traitement
+
+}
+
+</pre>
+</div>
+
+
+
+
+<h4>Request</h4>
+<p>Wrapper des tableaux <code>$_GET</code>, <code>$_POST</code> et <code>$_REQUEST</code>. Implémente la méthode magique <code>__get()</code> pour récupérer les paramètres passés dans l'URL en get ou post de manière unique.</p>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+$this->req = Request::get_instance();
+$nom  = $this->req->nom;  //équivaut à $nom = isset($_GET['nom']) ? $_GET['nom'] : "";
+$pnom = $this->req->pnom;  //équivaut à $pnom = isset($_GET['pnom']) ? $_GET['pnom'] : "";
+</pre>
+</div>
+<h4>Session</h4>
+<p>wrapper du tableau $_SESSION de php. Implémente les méthodes <code>__get()</code> et <code>__set()</code> pour stocker et récupérer de manière transparente les valeurs du tableaux <code>$_SESSION</code></p>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+$this->session = Session::get_instance();
+$this->session->utilisateur = $user // équivaut à $_SESSION['utilisateur']=$user
+$panier = $this->session->panier; 
+//équivaut à $panier = isset($_SESSION['panier']) ? $_SESSION['panier'] : "";
+</pre>
+</div>
+<h4>Site</h4>
+<p>Propose quelques fonctions outils relatives à l'affichage ou à la redirection</p> 
+<ul>
+<li><code>redirect($module='index',$action='index')</code> : redirige vers le module et l'action spécifiés</li>
+<li><code>ajouter_message($message,$type=INFO)</code> : ajoute un message dans la file</li>
+<li><code>liste_messages()</code> : liste les messages dans la file</li>
+<li><code>effacer_messages()</code> : supprime les messages de la file</li>
+<li><code>debug($données)</code> : affiche le détail des données passées en paramètres</li>
+</ul>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+	function action_traitement(){
+		//... mise à jour d'une table de la base, etc.
+		$this->site->ajouter_message("Mise à jour effectuée");
+		$this->site->redirect("ModuleX","ActionX");
+	}
+	...
+</pre>
+</div>
+<h5>Remarque</h5>
+La liste des messages permet de transmettre une information à destination de l'utilisateur d'une page à l'autre, notamment lors d'une redirection de page.
+
+<h3 id='tpl'>Template</h3>
+<p>
+L'affichage des modules s'effectue également <b>en dehors</b> du code à travers des templates.
+A chaque action du module correspond un fichier <code>.tpl</code> dans le dossier tpl du module.
+</p>
+<ul>
+<li><code>action_index</code> &rarr; index.tpl</li>
+<li><code>action_valider</code> &rarr; valider.tpl</li>
+<li><code>action_confirmer</code> &rarr; confirmer.tpl</li>
+</ul>
+<p><i>Remarque</i> : les actions qui ne génèrent pas d'affichage (redirection, envoi de fichiers) n'ont pas nécessairement besoin d'un fichier <code>.tpl</code> associé.
+</p>
+<p>
+Le passage de variables du module vers le template s'effectuent via la fonction <code>assign</code> du moteur de template smarty :
+</p>
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+function action_index(){
+	$this->tpl->assign("mavariable",5);	
+}
+</pre>
+</div>
+Dans le fichier <code>.tpl</code> :
+<div class='panel panel-default'>
+<div class='panel-heading'>Exemple</div>
+<pre>
+&lt;h1>Exemple&lt;/h1>
+&lt;b>{$mavariable}&lt;/b>
+</pre>
+</div>
+<p>
+Le template principal de la page est situé dans le dossier <code>template/main.tpl</code>
+</p>
+
+
+<!--
+<h4>Module</h4>
+<p>Classe chargée par le FrontController selon le paramètre <code>module</code> défini dans l'url</p>
+<ul>
+<li><code>set_variables($config)</code> : initialise les variables systèmes <code>site</code>,<code>session</code>,<code>req</code> et <code>tpl</code> </li>
+<li><code>set_title($title)</code> : définit le titre du module, et de la page</li>
+<li><code>set_tpl_name($tpl)</code> : indique le nom du <code>.tpl</code> à charger</li>
+<li><code>get_tpl_name()</code> : récupère le nom du <code>.tpl</code> associé au module</li>
+</ul>
+-->
+
+
+
+
+			</div>
+		</div>
+	</div>
+	</body>
+		
+</html>
+<!-- end template-->

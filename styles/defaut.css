@@ -1,0 +1,36 @@
+body{
+	background:	-webkit-gradient(linear, left top, left bottom, from(#556985), to(#7D9BC4));
+	background:	-moz-linear-gradient(to bottom, #556985, #7D9BC4);
+	padding-top: 70px;
+	height: 100%;
+
+}
+.container{
+	background: white;
+}
+
+label.required:after{
+	content:"*";	
+}
+
+pre{
+	white-space: pre-wrap;       /* css-3 */
+	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	word-wrap: break-word;
+	background:inherit;
+	border-width: 0px;
+}
+
+/*surcharge .panel dans bootstrap */
+.panel{
+	margin-top:10px;
+	
+}
+
+
+
+.doc h3{
+	border-bottom: 4px orange solid;
+}
