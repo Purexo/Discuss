@@ -12,5 +12,6 @@ $menus['Test']="?module=TestMembre";
 */
 
 $menus['Inscription'] = "?module=Inscription";
+$menus['Discussion'] = "?module=Discussions";
 $menus['Nouvelle Discussion'] = "?module=Discussions&action=new";
 ?>

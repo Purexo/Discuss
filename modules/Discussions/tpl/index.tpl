@@ -1,4 +1,5 @@
 <h1> Liste des discussions </h1>
+<a href="?module=Discussions&action=new" class="btn btn-default btn-lg btn-block"><span class="glyphicon glyphicon-plus"></span> Nouvelle Discussion</a>
 {foreach from=$discussions item=discussion}   
     <div class="discussion">
         <div class="titre">
