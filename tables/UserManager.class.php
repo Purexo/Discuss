@@ -54,7 +54,7 @@ class UserManager {
 			$user 			= new User($u['login'], $u['pseudo'], $u['email'], $u['mdp'], $u['id']);
 			// l'user existe deja dans la bdd son mdp est deja hashé
 			// donc on ecrase le surhashage du password
-			$user->mdp = $u['mdp']; 
+			$user->mdp = $u['mdp'];
 
 			return $user;
 		}
@@ -63,11 +63,29 @@ class UserManager {
 		public static function liste(){
 			$sql="SELECT id, login, pseudo, email from ".self::$table;
 			$res=DB::get_instance()->prepare($sql);
-			$res->execute(array($login));
-			//gérer les erreurs éventuelles
-			if($res->rowCount()==0){
-				return false;
+			$res->execute();
+			
+			if($res->rowCount()==0) return false; //gérer les erreurs éventuelles
+
+			$tab = array();
+			while ($u = $res->fetch(PDO::FETCH_ASSOC)) {
+				$user = new User();
+				$user->id = $u['id'];
+				$user->login = $u['login'];
+				$user->email = $u['email'];
+				$user->pseudo = $u['pseudo'];
+				$tab[] = $user;
 			}
+			return $tab;
+		}
+		
+		public static function listeAdmin(){
+			$sql="SELECT users.id, users.pseudo, users.email FROM users, admins
+				  WHERE admins.id = users.id" ;
+			$res=DB::get_instance()->prepare($sql);
+			$res->execute();
+			
+			if($res->rowCount()==0) return false; //gérer les erreurs éventuelles
 
 			$tab = array();
 			while ($u = $res->fetch(PDO::FETCH_ASSOC)) {
@@ -75,6 +93,27 @@ class UserManager {
 
 				$tab[] = $user;
 			}
+			return $tab;
+		}
+		
+		public static function listeNoAdmin(){
+			$sql="SELECT users.id, users.pseudo, users.email FROM users, admins
+				  WHERE admins.id != users.id" ;
+			$res=DB::get_instance()->prepare($sql);
+			$res->execute();
+			
+			if($res->rowCount()==0) return false; //gérer les erreurs éventuelles
+
+			$tab = array();
+			while ($u = $res->fetch(PDO::FETCH_ASSOC)) {
+				$user = new User();
+				$user->pseudo = $u['users.pseudo'];
+				$user->email = $u['users.email'];
+				$user->id = $u['users.id'];
+
+				$tab[] = $user;
+			}
+			
 			return $tab;
 		}
 
