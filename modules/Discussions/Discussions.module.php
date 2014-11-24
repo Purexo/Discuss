@@ -115,9 +115,9 @@
                 $id = $this->session->discussion;
 
                 $message = new Message($auteur, $id, $tab["message"]);
-                var_dump($message);
+                
                 MessageManager::creer($message);
-                //$this->site->redirect("Discussions", "view&id=".$id);
+                $this->site->redirect("Discussions", "view&id=".$id);
             }
         }
         /* ------------------------ /Validation des informations ------------------------ */
