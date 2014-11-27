@@ -69,7 +69,7 @@ class MessageManager {
 			" OR pseudo_mes = ?";
 
 			$res=DB::get_instance()->prepare($sql);
-			$res->execute(array($auteur, $auteur));
+			$res->execute(array((int)$auteur, $auteur));
 
 			if($res->rowCount()==0) return false;
 
