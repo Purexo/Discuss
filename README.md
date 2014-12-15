@@ -1,4 +1,6 @@
 # Discuss
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/purexo/Discuss?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Discuss a pour objectif d'être un service simple à appréhender et à mettre en place. Il se situe à mi-chemin entre un Forum et un "posteur de commentaire".
 
 Pour faire simple, après inscription il sera possible de créer des discussions(/topics) en les taggant. Ensuite les gens pourront poster des réponses.
